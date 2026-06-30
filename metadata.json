@@ -1,0 +1,6 @@
+{
+  "name": "Biba Communication",
+  "description": "Professional Accounting, Taxation, and Financial Compliance Services",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
