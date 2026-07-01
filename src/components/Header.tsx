@@ -121,7 +121,7 @@ export default function Header() {
               onClick={() => scrollToSection('estimator')} 
               className="bg-emerald-600 hover:bg-emerald-700 text-white px-5 py-2.5 rounded-lg text-sm font-semibold transition-all duration-200 shadow-sm shadow-emerald-600/10 hover:shadow-md flex items-center gap-1.5 cursor-pointer"
             >
-              <span>Get Free Quote</span>
+              <span>Apply Now</span>
               <ChevronRight className="w-4 h-4" />
             </button>
           </div>
@@ -211,7 +211,7 @@ export default function Header() {
                     onClick={() => scrollToSection('estimator')} 
                     className="w-full mt-2 bg-emerald-600 hover:bg-emerald-700 text-white text-center py-2.5 rounded-lg text-sm font-semibold transition-all duration-200 shadow-sm"
                   >
-                    Get Free Quote
+                    Apply Now
                   </button>
                 </div>
               </div>
