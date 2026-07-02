@@ -20,6 +20,12 @@ export interface Inquiry {
   message: string;
   submittedAt: string;
   status: 'Pending' | 'Contacted' | 'Completed';
+  serverLogs?: string[];
+  aiEmailSubject?: string;
+  aiEmailBody?: string;
+  aiSms?: string;
+  statusMessage?: string;
+  engineType?: 'cloud' | 'static';
 }
 
 export interface FAQItem {
