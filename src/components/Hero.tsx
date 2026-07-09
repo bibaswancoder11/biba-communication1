@@ -62,7 +62,7 @@ export default function Hero() {
             className="space-y-4 max-w-2xl mx-auto lg:mx-0"
           >
             <p className="text-lg font-medium text-slate-800 leading-relaxed font-serif italic border-l-4 border-emerald-500 pl-4 py-1 bg-white/40 shadow-xs rounded-r-lg">
-              &ldquo;{COMPANY_INFO.slogans[1]}&rdquo;
+              {"“"}{COMPANY_INFO.slogans[1]}{"”"}
             </p>
             <p className="text-slate-600 text-sm sm:text-base leading-relaxed">
               We provide professional accounting, ledger auditing, tax return filings, 

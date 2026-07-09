@@ -39,7 +39,7 @@ export default function Footer() {
             </p>
 
             <div className="p-4 bg-slate-900/60 rounded-xl border border-slate-900 text-xs text-slate-400 italic">
-              &ldquo;{COMPANY_INFO.slogans[0]}&rdquo;
+              {"“"}{COMPANY_INFO.slogans[0]}{"”"}
             </div>
           </div>
 

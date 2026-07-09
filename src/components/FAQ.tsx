@@ -97,7 +97,7 @@ export default function FAQ() {
                 </div>
 
                 <p className="text-slate-600 text-xs sm:text-sm leading-relaxed italic">
-                  &ldquo;{t.text}&rdquo;
+                  {"“"}{t.text}{"”"}
                 </p>
 
                 <div className="flex items-center gap-3 border-t border-slate-100 pt-4">

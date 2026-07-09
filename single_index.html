@@ -1,0 +1,1652 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Biba Communication - Professional Accounting &amp; Taxation Partners</title>
+  
+  <!-- Font Integration -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Playfair+Display:ital,wght@0,600;0,700;1,500&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+
+  <!-- Core CDNs -->
+  <!-- React & ReactDOM -->
+  <script src="https://unpkg.com/react@18/umd/react.production.min.js" crossorigin></script>
+  <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js" crossorigin></script>
+  <!-- Babel Standalone -->
+  <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+  <!-- Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- Lucide Icons -->
+  <script src="https://cdn.jsdelivr.net/npm/lucide@latest/dist/umd/lucide.min.js"></script>
+
+  <!-- Tailwind Configuration -->
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['Inter', 'sans-serif'],
+            serif: ['Playfair Display', 'serif'],
+            mono: ['JetBrains Mono', 'monospace'],
+          }
+        }
+      }
+    }
+  </script>
+
+  <style>
+    html {
+      scroll-behavior: smooth;
+    }
+    body {
+      background-color: #f8fafc;
+      font-family: 'Inter', sans-serif;
+    }
+    .selection-green::selection {
+      background-color: #10b981;
+      color: #ffffff;
+    }
+    /* Custom Scrollbars */
+    ::-webkit-scrollbar {
+      width: 6px;
+    }
+    ::-webkit-scrollbar-track {
+      background: #f1f5f9;
+    }
+    ::-webkit-scrollbar-thumb {
+      background: #cbd5e1;
+      border-radius: 4px;
+    }
+    ::-webkit-scrollbar-thumb:hover {
+      background: #94a3b8;
+    }
+  </style>
+</head>
+<body class="selection-green min-h-screen text-slate-800">
+  <div id="root"></div>
+
+  <!-- React Application Core Script -->
+  <script type="text/babel">
+    const { useState, useEffect, useMemo, useRef } = React;
+
+    // --- STATIC COMPANY DATA (Unicode Safe to prevent symbols corruption) ---
+    const COMPANY_INFO = {
+      name: 'Biba Communication',
+      tagline: 'Professional Accounting & Taxation Partners',
+      slogans: [
+        'We Provide Good Service At Reasonable Cost.',
+        'We are here to help you with all your Accounting needs, so that you can focus on running your Business.'
+      ],
+      contacts: {
+        phones: ['+91 7980224837', '+91 9830214131'],
+        email: 'bibacommunication22@gmail.com',
+        address: 'Kolkata, West Bengal, India',
+        officeHours: 'Monday \u2013 Saturday: 10:00 AM \u2013 8:00 PM (IST)',
+        consultationHours: 'Sunday: By Appointment Only'
+      }
+    };
+
+    const SERVICES_DATA = [
+      {
+        id: 'accounts-finalization',
+        index: 1,
+        name: 'Accounts Finalization',
+        category: 'Accounting & Finance',
+        description: 'Year-end consolidation of books, adjustment entries, and final ledger review to prepare audit-ready accounts.',
+        detailedDescription: 'Accounts finalization is the ultimate step in a financial year where we compile trial balances, make necessary depreciation and accrual entries, and reconcile accounts to present a true and fair view of your business financials to stakeholders and regulatory bodies.',
+        documentsRequired: ['Trial Balance', 'Bank Reconciliation Statements', 'Purchase & Sales Ledgers', 'Previous Year Balance Sheet', 'Depreciation Schedules'],
+        timeline: '5-7 Business Days',
+        pricingModel: 'Custom Estimate based on transaction volume'
+      },
+      {
+        id: 'accounting-services',
+        index: 2,
+        name: 'Accounting Services',
+        category: 'Accounting & Finance',
+        description: 'Comprehensive financial accounting management tailored for small and medium enterprises (SMEs).',
+        detailedDescription: 'End-to-end accounting services designed to keep your business financially healthy and fully compliant. We handle daily recording, account reconciliation, accounts payable/receivable management, and monthly performance reporting.',
+        documentsRequired: ['Sales Invoices', 'Purchase Vouchers', 'Bank Statements', 'Cash Expense Bills', 'Credit Card Statements'],
+        timeline: 'Ongoing / Monthly Retainer',
+        pricingModel: 'Monthly Subscription or Retainer'
+      },
+      {
+        id: 'audit-work',
+        index: 3,
+        name: 'Audit Work Coordination',
+        category: 'Accounting & Finance',
+        description: 'Assisting and preparing comprehensive files for external statutory, tax, and internal audits.',
+        detailedDescription: 'We streamline the audit process for you. Our team organizes audit schedules, checks internal controls, compiles supporting documentation, and directly coordinates with external auditors to ensure smooth completion with minimal disruption.',
+        documentsRequired: ['All ledgers', 'Tax invoices & receipts', 'Bank statements', 'Board resolutions / major contracts', 'Inventory reports'],
+        timeline: '1-2 Weeks (depending on audit scope)',
+        pricingModel: 'Flat Audit Assistance Fee'
+      },
+      {
+        id: 'balance-sheet',
+        index: 4,
+        name: 'Balance Sheet Preparation',
+        category: 'Accounting & Finance',
+        description: 'Drafting structured Balance Sheets and Profit & Loss Statements compliant with corporate law.',
+        detailedDescription: 'A Balance Sheet is a crucial snapshot of your business assets, liabilities, and equity. We draft visually professional, formula-verified sheets that present your financial strength accurately for banks, investors, or credit evaluations.',
+        documentsRequired: ['Final Trial Balance', 'Inventory Valuation Certificate', 'Creditors & Debtors Ageing List', 'Bank & Cash balances'],
+        timeline: '3-4 Business Days',
+        pricingModel: 'Flat rate per financial year'
+      },
+      {
+        id: 'bookkeeping',
+        index: 5,
+        name: 'Bookkeeping',
+        category: 'Accounting & Finance',
+        description: 'Systematic daily recording of financial transactions to maintain organized ledger records.',
+        detailedDescription: 'Bookkeeping is the foundation of sound financial management. We systematically record receipts, payments, purchases, and sales in customized bookkeeping software, keeping your records flawless, tidy, and audit-ready at all times.',
+        documentsRequired: ['Daily Sales logs', 'Vendor receipts', 'Bank statements', 'Expense receipts'],
+        timeline: 'Ongoing / Weekly updates',
+        pricingModel: 'Hourly or Monthly Package'
+      },
+      {
+        id: 'e-invoicing-e-waybill',
+        index: 6,
+        name: 'E-Invoicing & E-Waybill',
+        category: 'Taxation & Returns',
+        description: 'Seamless registration, generation, and compliance services for digital commercial transit invoicing.',
+        detailedDescription: 'Generate electronic invoices on the GST portal for B2B compliance and generate real-time Electronic Way Bills (E-Way Bills) for safe and legally compliant goods transportation across state borders.',
+        documentsRequired: ['Tax Invoice details', 'Consignor & Consignee GSTIN', 'Transporter ID & Vehicle Number', 'Source & Destination PIN codes'],
+        timeline: 'Within 1 Hour / Real-time support',
+        pricingModel: 'Pay-per-invoice or Monthly package'
+      },
+      {
+        id: 'gst-return',
+        index: 7,
+        name: 'GST Return (Monthly or Quarterly)',
+        category: 'Taxation & Returns',
+        description: 'Filing GSTR-1, GSTR-3B, and GSTR-4 returns with precise Input Tax Credit (ITC) reconciliation.',
+        detailedDescription: 'Avoid heavy penalties and late fees. We perform thorough GSTR-2B ITC reconciliations to ensure you claim 100% legitimate input tax credits, and file GSTR-1 (Outward Sales) and GSTR-3B (Summary Return) correctly on monthly or quarterly schedules.',
+        documentsRequired: ['Sales Register', 'Purchase Register', 'GST Portal Login Credentials', 'ITC Reconciled Ledger'],
+        timeline: '2-3 Business Days prior to deadline',
+        pricingModel: 'Flat fee per filing session'
+      },
+      {
+        id: 'income-tax-return',
+        index: 8,
+        name: 'Income Tax Return (ITR)',
+        category: 'Taxation & Returns',
+        description: 'Personal, professional, and corporate Income Tax Return filing customized to maximize legal deductions.',
+        detailedDescription: 'We file ITR-1 to ITR-7 for salaried individuals, self-employed professionals, partnerships, and private companies. We evaluate eligible deductions under Chapter VI-A to minimize tax liability legally.',
+        documentsRequired: ['Form 16 / 16A', 'Form 26AS & AIS/TIS', 'Bank Interest Certificates', 'Investment Receipts (80C, 80D, etc.)', 'Capital Gains statement (if any)'],
+        timeline: '2-3 Business Days',
+        pricingModel: 'Tiered based on ITR form complexity'
+      },
+      {
+        id: 'tds-returns',
+        index: 9,
+        name: 'TDS Returns Filing',
+        category: 'Taxation & Returns',
+        description: 'Quarterly filing of Form 24Q, 26Q, and 27Q along with form 16/16A generation.',
+        detailedDescription: 'Accurate deduction and timely remittance of Tax Deducted at Source (TDS). We compile TDS sheets, file quarterly statements, and assist in issuing Form 16 (for salaries) or Form 16A (non-salary transactions) without errors.',
+        documentsRequired: ['TDS deduction sheet', 'Challan payment receipts (ITNS 281)', 'PAN details of deductees', 'TAN Certificate'],
+        timeline: '3-4 Business Days',
+        pricingModel: 'Per-quarter flat filing fee'
+      },
+      {
+        id: 'trade-licence',
+        index: 10,
+        name: 'Trade License Assistance',
+        category: 'Registrations & Licences',
+        description: 'Assisting businesses in acquiring and renewing local Municipal Trade Licenses.',
+        detailedDescription: 'A Trade License is mandatory to run any commercial establishment legally within municipal limits. We draft application files, review safety/commercial compliances, and submit to municipal corporations (such as KMC/HMC) for fast approval.',
+        documentsRequired: ['Rent agreement / Property Tax receipt', 'Partnership Deed or Incorporation cert', 'PAN Card of owner/firm', 'Establishment layout sketch'],
+        timeline: '7-10 Business Days',
+        pricingModel: 'Application coordination fee'
+      },
+      {
+        id: 'pan-card',
+        index: 11,
+        name: 'New or Correction in PAN Card',
+        category: 'Registrations & Licences',
+        description: 'Processing fresh Permanent Account Number (PAN) applications or correction of typos and data fields.',
+        detailedDescription: 'A hassle-free service to apply for an individual, partnership, or corporate PAN. We verify and submit supporting proof of address/identity to avoid rejections, and process name, DOB, or signature corrections easily.',
+        documentsRequired: ['Aadhaar Card', 'Passport-size photographs', 'Proof of Date of Birth', 'Signature authorization'],
+        timeline: '5-7 Business Days (e-PAN in 48 hours)',
+        pricingModel: 'Fixed processing fee'
+      },
+      {
+        id: 'property-tax',
+        index: 12,
+        name: 'Property Tax Payment',
+        category: 'Payments & Levies',
+        description: 'Calculation, assessment, and online payment filing of residential or commercial Municipal Property Taxes.',
+        detailedDescription: 'Avoid heavy interest on municipal dues. We analyze annual valuation certificates, calculate tax due including applicable rebates, and pay taxes through authorized municipal payment gateways, delivering legal receipt certificates.',
+        documentsRequired: ['Previous Year Tax Receipt', 'Assessee Number / Property ID', 'Mutation Certificate (if new)'],
+        timeline: '1-2 Business Days',
+        pricingModel: 'Per-payment coordination fee'
+      },
+      {
+        id: 'khajna-payment',
+        index: 13,
+        name: 'Khajna (Land Revenue) Payment',
+        category: 'Payments & Levies',
+        description: 'State government land revenue payment and certificate procurement assistance.',
+        detailedDescription: 'Khajna is the annual agricultural or commercial land tax paid to the land revenue department. We verify your land deeds on the Banglarbhumi portal, calculate current dues, submit online land revenue payments, and obtain formal receipts.',
+        documentsRequired: ['Land Deed (Deed/Khatian/Parcha)', 'Assessee details', 'Previous Khajna payment receipt'],
+        timeline: '3-5 Business Days',
+        pricingModel: 'Per-plot coordination fee'
+      },
+      {
+        id: 'vehicle-tax',
+        index: 14,
+        name: 'Vehicle Tax Payment',
+        category: 'Payments & Levies',
+        description: 'Filing and payment of commercial/personal Motor Vehicle taxes and ecological green taxes.',
+        detailedDescription: 'Keep your vehicles road-legal. We check outstanding tax, penalty margins, and green taxes on the national Vahan/Parivahan portals, process the payment securely, and deliver the official tax token instantly.',
+        documentsRequired: ['Vehicle Registration Certificate (RC Book)', 'Insurance Certificate', 'Pollution Under Control (PUC) Certificate'],
+        timeline: '1 Business Day',
+        pricingModel: 'Per-vehicle processing fee'
+      }
+    ];
+
+    const FAQS = [
+      {
+        id: 'faq-1',
+        question: 'Why should I choose Biba Communication for my accounting needs?',
+        answer: 'We provide exceptionally precise and organized accounting, tax filings, and license coordination under one roof. Our pricing is highly competitive ("Reasonable Cost"), and we prioritize personal attention so you can free up your schedule and fully focus on growing your business.',
+        category: 'General'
+      },
+      {
+        id: 'faq-2',
+        question: 'How do I submit my financial documents to Biba Communication?',
+        answer: 'You can share digital scans of your invoices, vouchers, and statements securely via Email or WhatsApp. For local clients in West Bengal/Kolkata, physical document handovers or pick-ups can be arranged if requested.',
+        category: 'Operations'
+      },
+      {
+        id: 'faq-3',
+        question: 'What is Khajna and why is paying it necessary?',
+        answer: 'Khajna is the state land revenue tax (applicable in West Bengal and surrounding regions) paid on land ownership. Keeping your Khajna updated is absolutely essential to avoid legal land disputes, ensure smooth mutation during property sales, and qualify for bank mortgages.',
+        category: 'Property & Land'
+      },
+      {
+        id: 'faq-4',
+        question: 'What is the frequency of GST Return filings?',
+        answer: 'Depending on your business turnover, you can opt for either Monthly or Quarterly return filing under the GST Composition or Regular Schemes. We analyze your ledger size and advise you on the most compliance-friendly schedule.',
+        category: 'Taxation'
+      },
+      {
+        id: 'faq-5',
+        question: 'How long does it take to apply for or correct a PAN card?',
+        answer: 'Fresh applications are processed very fast; an electronic PAN (e-PAN) is generated in 48-72 hours, and the physical card arrives at your registered address in 7-10 business days. Corrections can take slightly longer (5-10 business days) depending on verification.',
+        category: 'Licences & PAN'
+      }
+    ];
+
+    const TESTIMONIALS = [
+      {
+        id: 'test-1',
+        name: 'Suhail Sen',
+        role: 'Director',
+        company: 'Sen & Co. Logistics',
+        text: 'Biba Communication has transformed our bookkeeping and GST returns. Their e-invoicing and e-waybill generation is incredibly fast. They keep our transit trucks moving without regulatory delays.',
+        rating: 5
+      },
+      {
+        id: 'test-2',
+        name: 'Ananya Banerjee',
+        role: 'Founder',
+        company: 'Banerjee Legal & Associates',
+        text: 'Accounts finalization was always a stressful time of year until we partnered with Biba. They reconciled our complex client accounts, drafted a flawless balance sheet, and assisted our auditors seamlessly. High-integrity team!',
+        rating: 5
+      },
+      {
+        id: 'test-3',
+        name: 'Siddheshwar Ghosh',
+        role: 'Retail Store Owner',
+        company: 'Ghosh Enterprise',
+        text: 'Highly recommend them for Trade Licenses and PAN corrections. They explained exactly which documents were needed, charged a very reasonable fee, and delivered our approved license ahead of schedule.',
+        rating: 5
+      }
+    ];
+
+    // --- ROBUST UNICODE & BROWSER IMMUNE LUCIDE ICON SHIM ---
+    function LucideIcon({ name, className = "", size = 20 }) {
+      const iconRef = useRef(null);
+      const [loaded, setLoaded] = React.useState(!!window.lucide);
+
+      React.useEffect(() => {
+        if (window.lucide) {
+          setLoaded(true);
+          return;
+        }
+
+        const interval = setInterval(() => {
+          if (window.lucide) {
+            setLoaded(true);
+            clearInterval(interval);
+          }
+        }, 100);
+
+        return () => clearInterval(interval);
+      }, []);
+
+      React.useEffect(() => {
+        if (iconRef.current && window.lucide) {
+          iconRef.current.innerHTML = '';
+          const kebabName = name
+            .replace(/([a-z0-9])([A-Z])/g, '$1-$2')
+            .replace(/([A-Z])([A-Z][a-z])/g, '$1-$2')
+            .toLowerCase();
+          
+          const icon = window.lucide.icons[kebabName] || window.lucide.icons[name.toLowerCase()] || window.lucide.icons['help-circle'];
+          if (icon) {
+            const svg = icon.toSvg({
+              class: className,
+              width: size,
+              height: size,
+              'stroke-width': 2
+            });
+            iconRef.current.innerHTML = svg;
+          }
+        }
+      }, [name, className, size, loaded]);
+
+      return <span ref={iconRef} className="inline-flex items-center justify-center shrink-0"></span>;
+    }
+
+    const Phone = (props) => <LucideIcon name="Phone" {...props} />;
+    const Mail = (props) => <LucideIcon name="Mail" {...props} />;
+    const Clock = (props) => <LucideIcon name="Clock" {...props} />;
+    const Menu = (props) => <LucideIcon name="Menu" {...props} />;
+    const X = (props) => <LucideIcon name="X" {...props} />;
+    const Briefcase = (props) => <LucideIcon name="Briefcase" {...props} />;
+    const ChevronRight = (props) => <LucideIcon name="ChevronRight" {...props} />;
+    const ArrowRight = (props) => <LucideIcon name="ArrowRight" {...props} />;
+    const ShieldCheck = (props) => <LucideIcon name="ShieldCheck" {...props} />;
+    const CheckCircle2 = (props) => <LucideIcon name="CheckCircle2" {...props} />;
+    const CheckCircle = (props) => <LucideIcon name="CheckCircle" {...props} />;
+    const TrendingUp = (props) => <LucideIcon name="TrendingUp" {...props} />;
+    const Sparkles = (props) => <LucideIcon name="Sparkles" {...props} />;
+    const BookOpen = (props) => <LucideIcon name="BookOpen" {...props} />;
+    const FileCheck = (props) => <LucideIcon name="FileCheck" {...props} />;
+    const Scale = (props) => <LucideIcon name="Scale" {...props} />;
+    const Landmark = (props) => <LucideIcon name="Landmark" {...props} />;
+    const Plus = (props) => <LucideIcon name="Plus" {...props} />;
+    const Minus = (props) => <LucideIcon name="Minus" {...props} />;
+    const Search = (props) => <LucideIcon name="Search" {...props} />;
+    const Trash2 = (props) => <LucideIcon name="Trash2" {...props} />;
+    const Terminal = (props) => <LucideIcon name="Terminal" {...props} />;
+    const ChevronDown = (props) => <LucideIcon name="ChevronDown" {...props} />;
+    const ChevronUp = (props) => <LucideIcon name="ChevronUp" {...props} />;
+    const Copy = (props) => <LucideIcon name="Copy" {...props} />;
+    const Loader2 = (props) => <LucideIcon name="Loader2" {...props} />;
+    const AlertTriangle = (props) => <LucideIcon name="AlertTriangle" {...props} />;
+    const PhoneCall = (props) => <LucideIcon name="PhoneCall" {...props} />;
+    const MessageSquare = (props) => <LucideIcon name="MessageSquare" {...props} />;
+    const MessageSquareQuote = (props) => <LucideIcon name="MessageSquareQuote" {...props} />;
+    const MailOpen = (props) => <LucideIcon name="MailOpen" {...props} />;
+    const Star = (props) => <LucideIcon name="Star" {...props} />;
+    const MapPin = (props) => <LucideIcon name="MapPin" {...props} />;
+    const ArrowUp = (props) => <LucideIcon name="ArrowUp" {...props} />;
+    const Layers = (props) => <LucideIcon name="Layers" {...props} />;
+
+    // --- COMPACT CLIENT-SIDE EMAIL & WHATSAPP DRAFT ENGINE ---
+    function generateLocalDrafts(fullName, preferredContact, phone, email, selectedServiceNames, message) {
+      const timestamp = new Date().toLocaleTimeString();
+      const logs = [
+        `[${timestamp}] Queue Console online.`,
+        `[${timestamp}] Formulating professional client profile context...`
+      ];
+
+      const servicesText = selectedServiceNames.length > 0 ? selectedServiceNames.join(', ') : 'General Financial Consultation';
+      logs.push(`[${new Date().toLocaleTimeString()}] Target Services: "${servicesText}"`);
+
+      const subject = `Callback consultation request with Biba Communication - ${fullName}`;
+      
+      let advisoryLine = 'We have assigned a dedicated compliance officer to inspect your files.';
+      const sLower = servicesText.toLowerCase();
+      if (sLower.includes('tax') || sLower.includes('gst')) {
+        advisoryLine = 'Our senior tax accountant is auditing GSTR-2B credit files to protect your margins.';
+      } else if (sLower.includes('khajna') || sLower.includes('land')) {
+        advisoryLine = 'Our land revenue desk is preparing database searches on West Bengal land registers.';
+      }
+
+      const emailBody = `Dear ${fullName},\n\nThank you for choosing Biba Communication. We have successfully received your callback request.\n\nSummary of Selected Services:\n\u2022 ${servicesText}\n\nOur Advisory Focus:\n${advisoryLine}\n\nWe will be in touch shortly via ${preferredContact === 'phone' ? `phone at ${phone}` : `email at ${email}`}.\n\nBest regards,\nBiba Communication Desk\nKolkata, West Bengal\nSupport: +91 7980224837`;
+      const smsText = `Biba Callback Request: ${fullName} (${phone || 'N/A'}). Services: ${servicesText}.`;
+
+      logs.push(`[${new Date().toLocaleTimeString()}] Local drafts generated successfully!`);
+      logs.push(`[${new Date().toLocaleTimeString()}] WhatsApp & Email quick launches synchronized.`);
+
+      return { subject, emailBody, smsText, logs };
+    }
+
+    function getWhatsAppUrl(inq) {
+      const serviceNamesText = SERVICES_DATA
+        .filter(s => inq.selectedServiceIds.includes(s.id))
+        .map(s => s.name)
+        .join(', ') || 'General Consultation';
+
+      const text = 
+        `*NEW BIBA CALLBACK LEAD*\n` +
+        `---------------------------\n` +
+        `👤 *Name:* ${inq.fullName}\n` +
+        `📞 *Phone:* ${inq.phone || 'Not provided'}\n` +
+        `✉️ *Email:* ${inq.email || 'Not provided'}\n` +
+        `🛠️ *Services:* ${serviceNamesText}\n` +
+        `📝 *Query:* ${inq.message || 'No custom notes.'}\n` +
+        `---------------------------\n` +
+        `🕒 *Submitted:* ${inq.submittedAt}\n` +
+        `⚡ *Queue:* Free Static Local`;
+
+      return `https://wa.me/917980224837?text=${encodeURIComponent(text)}`;
+    }
+
+    // --- HEADER COMPONENT ---
+    function Header() {
+      const [isOpen, setIsOpen] = useState(false);
+      const [isScrolled, setIsScrolled] = useState(false);
+
+      useEffect(() => {
+        const handleScroll = () => {
+          setIsScrolled(window.scrollY > 40);
+        };
+        window.addEventListener('scroll', handleScroll);
+        return () => window.removeEventListener('scroll', handleScroll);
+      }, []);
+
+      const scrollToSection = (id) => {
+        setIsOpen(false);
+        const element = document.getElementById(id);
+        if (element) {
+          const offset = 80;
+          const bodyRect = document.body.getBoundingClientRect().top;
+          const elementRect = element.getBoundingClientRect().top;
+          const offsetPosition = (elementRect - bodyRect) - offset;
+          window.scrollTo({ top: offsetPosition, behavior: 'smooth' });
+        }
+      };
+
+      return (
+        <header className="w-full z-50 transition-all duration-300">
+          <div className="bg-slate-900 text-slate-300 text-xs py-2 px-4 border-b border-slate-800">
+            <div className="max-w-7xl mx-auto flex flex-col sm:flex-row justify-between items-center gap-2">
+              <div className="flex flex-wrap justify-center sm:justify-start gap-4 items-center">
+                <a href={`mailto:${COMPANY_INFO.contacts.email}`} className="flex items-center gap-1.5 hover:text-emerald-400 transition-colors">
+                  <Mail className="w-3.5 h-3.5 text-emerald-400" />
+                  <span>{COMPANY_INFO.contacts.email}</span>
+                </a>
+                <div className="hidden md:block w-px h-3 bg-slate-700" />
+                <a href={`tel:${COMPANY_INFO.contacts.phones[0].replace(/\s+/g, '')}`} className="flex items-center gap-1.5 hover:text-emerald-400 transition-colors">
+                  <Phone className="w-3.5 h-3.5 text-emerald-400" />
+                  <span>{COMPANY_INFO.contacts.phones[0]}</span>
+                </a>
+              </div>
+              <div className="flex items-center gap-1.5 text-slate-400">
+                <Clock className="w-3.5 h-3.5 text-emerald-500" />
+                <span>Mon - Sat: 10:00 AM - 8:00 PM</span>
+              </div>
+            </div>
+          </div>
+
+          <nav className={`w-full py-4 px-4 lg:px-8 transition-all duration-300 ${
+            isScrolled ? 'bg-white/95 backdrop-blur-md shadow-md fixed top-0 left-0 right-0 border-b border-slate-100' : 'bg-white border-b border-slate-100'
+          }`}>
+            <div className="max-w-7xl mx-auto flex justify-between items-center">
+              <div className="flex items-center gap-2.5 cursor-pointer" onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}>
+                <div className="w-10 h-10 rounded-lg bg-emerald-600 flex items-center justify-center text-white shadow-sm shadow-emerald-600/30">
+                  <Briefcase className="w-5.5 h-5.5" />
+                </div>
+                <div>
+                  <span className="font-serif text-xl sm:text-2xl font-bold tracking-tight text-slate-900 block leading-tight">BIBA</span>
+                  <span className="font-sans text-xs tracking-widest font-semibold text-emerald-600 block uppercase leading-none mt-0.5">Communication</span>
+                </div>
+              </div>
+
+              <div className="hidden lg:flex items-center gap-8">
+                {['about', 'services', 'estimator', 'faq', 'contact'].map(sec => (
+                  <button key={sec} onClick={() => scrollToSection(sec)} className="text-slate-600 hover:text-emerald-600 font-medium transition-colors cursor-pointer text-sm capitalize">
+                    {sec === 'estimator' ? 'Quote Planner' : sec.replace('-', ' ')}
+                  </button>
+                ))}
+              </div>
+
+              <div className="hidden lg:flex items-center gap-4">
+                <button onClick={() => scrollToSection('estimator')} className="bg-emerald-600 hover:bg-emerald-700 text-white px-5 py-2.5 rounded-lg text-sm font-semibold transition-all duration-200 shadow-sm flex items-center gap-1.5 cursor-pointer">
+                  <span>Apply Now</span>
+                  <ChevronRight className="w-4 h-4" />
+                </button>
+              </div>
+
+              <div className="lg:hidden flex items-center gap-2">
+                <a href={`tel:${COMPANY_INFO.contacts.phones[0].replace(/\s+/g, '')}`} className="p-2.5 rounded-lg bg-emerald-55/20 text-emerald-600 hover:bg-emerald-100 transition-all mr-1">
+                  <Phone className="w-5 h-5" />
+                </a>
+                <button onClick={() => setIsOpen(!isOpen)} className="p-2 rounded-lg text-slate-700 hover:bg-slate-50 transition-all border border-slate-200 cursor-pointer">
+                  {isOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
+                </button>
+              </div>
+            </div>
+
+            {isOpen && (
+              <div className="lg:hidden border-t border-slate-100 mt-4 overflow-hidden">
+                <div className="flex flex-col gap-4 py-4 px-2">
+                  {['about', 'services', 'estimator', 'faq', 'contact'].map(sec => (
+                    <button key={sec} onClick={() => scrollToSection(sec)} className="text-left py-2 px-3 hover:bg-slate-50 rounded-lg text-slate-700 hover:text-emerald-600 font-medium transition-colors text-sm capitalize">
+                      {sec === 'estimator' ? 'Quote Planner' : sec.replace('-', ' ')}
+                    </button>
+                  ))}
+                  <div className="border-t border-slate-100 pt-4 flex flex-col gap-2.5">
+                    <span className="px-3 py-1 text-xs text-slate-400 uppercase tracking-widest font-semibold">Contacts</span>
+                    {COMPANY_INFO.contacts.phones.map((phone, idx) => (
+                      <a key={idx} href={`tel:${phone.replace(/\s+/g, '')}`} className="flex items-center gap-2.5 py-1 px-3 text-slate-600 hover:text-emerald-600 text-sm transition-colors">
+                        <Phone className="w-4 h-4 text-emerald-500" />
+                        <span>{phone}</span>
+                      </a>
+                    ))}
+                    <button onClick={() => scrollToSection('estimator')} className="w-full mt-2 bg-emerald-600 text-white text-center py-2.5 rounded-lg text-sm font-semibold">Apply Now</button>
+                  </div>
+                </div>
+              </div>
+            )}
+          </nav>
+          {isScrolled && <div className="h-[73px]" />}
+        </header>
+      );
+    }
+
+    // --- HERO COMPONENT ---
+    function Hero() {
+      const scrollToSection = (id) => {
+        const element = document.getElementById(id);
+        if (element) {
+          const offset = 80;
+          const bodyRect = document.body.getBoundingClientRect().top;
+          const elementRect = element.getBoundingClientRect().top;
+          const offsetPosition = (elementRect - bodyRect) - offset;
+          window.scrollTo({ top: offsetPosition, behavior: 'smooth' });
+        }
+      };
+
+      return (
+        <section className="relative overflow-hidden bg-slate-55 border-b border-slate-100 py-16 lg:py-24 px-4 lg:px-8">
+          <div className="absolute inset-0 bg-[linear-gradient(to_right,#cbd5e120_1px,transparent_1px),linear-gradient(to_bottom,#cbd5e120_1px,transparent_1px)] bg-[size:4rem_4rem]" />
+          <div className="absolute -top-40 -right-40 w-96 h-96 bg-emerald-100 rounded-full blur-3xl opacity-50" />
+          <div className="absolute -bottom-40 -left-40 w-96 h-96 bg-slate-200 rounded-full blur-3xl opacity-50" />
+
+          <div className="max-w-7xl mx-auto relative z-10 grid lg:grid-cols-12 gap-12 lg:gap-8 items-center">
+            <div className="lg:col-span-7 space-y-8 text-center lg:text-left">
+              <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-emerald-50 text-emerald-800 text-xs font-semibold uppercase tracking-wider border border-emerald-100/60">
+                <Sparkles className="w-3.5 h-3.5 text-emerald-600 animate-pulse" />
+                <span>{COMPANY_INFO.tagline}</span>
+              </div>
+
+              <h1 className="text-4xl sm:text-5xl lg:text-6xl font-serif font-bold text-slate-900 tracking-tight leading-[1.1]">
+                Complete Financial &amp; <br className="hidden sm:inline" />
+                <span className="text-emerald-600 relative">
+                  Taxation Solutions
+                  <span className="absolute bottom-1.5 left-0 w-full h-2 bg-emerald-100 -z-10 rounded-full" />
+                </span>
+              </h1>
+
+              <div className="space-y-4 max-w-2xl mx-auto lg:mx-0">
+                <p className="text-lg font-medium text-slate-800 leading-relaxed font-serif italic border-l-4 border-emerald-500 pl-4 py-1 bg-white/40 shadow-xs rounded-r-lg">
+                  {"“"}{COMPANY_INFO.slogans[1]}{"”"}
+                </p>
+                <p className="text-slate-600 text-sm sm:text-base leading-relaxed">
+                  We provide professional accounting, ledger auditing, tax return filings, and municipal license assistance tailored specifically for business owners. Our commitment is high precision compliance and <span className="text-emerald-700 font-semibold">{COMPANY_INFO.slogans[0].toLowerCase().replace('.', '')}</span>.
+                </p>
+              </div>
+
+              <div className="flex flex-col sm:flex-row justify-center lg:justify-start items-center gap-4 pt-2">
+                <button onClick={() => scrollToSection('estimator')} className="w-full sm:w-auto bg-emerald-600 hover:bg-emerald-700 active:bg-emerald-800 text-white font-semibold py-3.5 px-8 rounded-xl shadow-lg shadow-emerald-600/20 hover:shadow-xl transition-all duration-200 flex items-center justify-center gap-2 cursor-pointer">
+                  <span>Apply Now</span>
+                  <ArrowRight className="w-5 h-5" />
+                </button>
+                <button onClick={() => scrollToSection('services')} className="w-full sm:w-auto bg-white hover:bg-slate-100 text-slate-800 font-semibold py-3.5 px-8 rounded-xl border border-slate-200 shadow-xs transition-all duration-200 flex items-center justify-center gap-2 cursor-pointer">
+                  <span>View 14 Services</span>
+                </button>
+              </div>
+
+              <div className="flex flex-wrap justify-center lg:justify-start gap-x-6 gap-y-3 pt-4 text-xs font-semibold text-slate-600 uppercase tracking-wider">
+                <div className="flex items-center gap-1.5">
+                  <CheckCircle2 className="w-4 h-4 text-emerald-500" />
+                  <span>Accounts Finalization</span>
+                </div>
+                <div className="flex items-center gap-1.5">
+                  <CheckCircle2 className="w-4 h-4 text-emerald-500" />
+                  <span>GST &amp; Income Tax Filings</span>
+                </div>
+                <div className="flex items-center gap-1.5">
+                  <CheckCircle2 className="w-4 h-4 text-emerald-500" />
+                  <span>Municipal Licenses</span>
+                </div>
+              </div>
+            </div>
+
+            <div className="lg:col-span-5">
+              <div className="relative bg-white rounded-2xl p-6 sm:p-8 shadow-xl shadow-slate-200/80 border border-slate-100">
+                <div className="absolute -top-3.5 right-6 bg-slate-900 text-emerald-400 font-mono text-[10px] font-bold tracking-widest uppercase px-3 py-1 rounded-full flex items-center gap-1.5 shadow-md">
+                  <ShieldCheck className="w-3.5 h-3.5" />
+                  <span>Certified Desk</span>
+                </div>
+
+                <div className="space-y-6">
+                  <div className="flex items-center gap-3">
+                    <div className="p-3 bg-emerald-50 rounded-xl">
+                      <TrendingUp className="w-6 h-6 text-emerald-600" />
+                    </div>
+                    <div>
+                      <h3 className="font-serif font-bold text-slate-800 text-lg leading-tight">Regulatory Trust Desk</h3>
+                      <p className="text-xs text-slate-500">Fast-tracked compliance processing</p>
+                    </div>
+                  </div>
+
+                  <div className="border-t border-slate-100 pt-6">
+                    <p className="text-xs font-semibold uppercase tracking-wider text-slate-400 mb-4">Core Metrics</p>
+                    <div className="grid grid-cols-2 gap-4">
+                      <div className="bg-slate-50 p-3 rounded-lg border border-slate-100">
+                        <span className="block font-serif text-2xl font-bold text-slate-900">100%</span>
+                        <span className="text-[11px] font-medium text-slate-500 block leading-tight mt-1">Accuracy in Books</span>
+                      </div>
+                      <div className="bg-slate-50 p-3 rounded-lg border border-slate-100">
+                        <span className="block font-serif text-2xl font-bold text-slate-900">Prompt</span>
+                        <span className="text-[11px] font-medium text-slate-500 block leading-tight mt-1">Transit Compliances</span>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className="bg-emerald-50/50 p-4 rounded-xl border border-emerald-100/40 text-center">
+                    <p className="text-xs text-slate-600 leading-relaxed">
+                      Need immediate assistance with <span className="font-semibold text-slate-800">ITR Return</span> or <span className="font-semibold text-slate-800">Trade License</span>?
+                    </p>
+                    <button onClick={() => scrollToSection('contact')} className="mt-2.5 text-xs font-bold text-emerald-700 hover:text-emerald-800 flex items-center gap-1 mx-auto transition-colors cursor-pointer">
+                      <span>Chat With Our Tax Desk</span>
+                      <ArrowRight className="w-3.5 h-3.5" />
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+      );
+    }
+
+    // --- ABOUT COMPONENT ---
+    function About() {
+      const coreValues = [
+        {
+          icon: <ShieldCheck className="w-6 h-6 text-emerald-600" />,
+          title: "Regulatory Accuracy",
+          desc: "Zero-tolerance for return errors. We thoroughly cross-examine Form 26AS, AIS/TIS, and ITC registers."
+        },
+        {
+          icon: <Scale className="w-6 h-6 text-emerald-600" />,
+          title: "Reasonable Costs",
+          desc: "True to our slogan, we deliver elite advisory expertise at fractions of corporate agency pricing."
+        },
+        {
+          icon: <FileCheck className="w-6 h-6 text-emerald-600" />,
+          title: "Local State Mastery",
+          desc: "Highly specialized in municipal license filings, land registers, and local West Bengal property taxes."
+        }
+      ];
+
+      return (
+        <section id="about" className="py-20 bg-white border-b border-slate-100 px-4 lg:px-8 relative overflow-hidden">
+          <div className="absolute inset-0 bg-[linear-gradient(to_right,#cbd5e110_1px,transparent_1px),linear-gradient(to_bottom,#cbd5e110_1px,transparent_1px)] bg-[size:3rem_3rem]" />
+          
+          <div className="max-w-7xl mx-auto space-y-16 relative z-10">
+            <div className="grid lg:grid-cols-12 gap-12 items-center">
+              <div className="lg:col-span-7 space-y-6 text-left">
+                <span className="text-xs font-bold uppercase tracking-widest text-emerald-600 bg-emerald-50 px-3 py-1 rounded-full">Corporate Dossier</span>
+                <h2 className="text-3xl sm:text-4xl font-serif font-bold text-slate-900 tracking-tight leading-tight">
+                  A Highly Accountable Compliance Partner for Your Business
+                </h2>
+                
+                <p className="text-slate-600 leading-relaxed text-sm sm:text-base">
+                  Biba Communication is an independent financial consulting firm in Kolkata. We lift the massive regulatory burden of GST filings, accounting finalization, land tax, and municipal licenses off your shoulders so you can focus 100% on expanding operations.
+                </p>
+
+                <div className="border-l-4 border-emerald-500 bg-slate-50 p-4 rounded-r-xl italic text-slate-700 text-sm">
+                  {"“"}We believe small and midsize businesses deserve the same absolute ledger accuracy and audit quality as giant corporations, offered at a completely reasonable cost structure.{"”"}
+                </div>
+              </div>
+
+              <div className="lg:col-span-5 space-y-5">
+                <div className="bg-slate-50 border border-slate-150 rounded-2xl p-6 sm:p-8 space-y-6 shadow-xs">
+                  <div className="space-y-1">
+                    <h3 className="font-serif font-bold text-slate-800 text-lg">Our Service Pillars</h3>
+                    <p className="text-xs text-slate-400">What shapes the Biba standard</p>
+                  </div>
+
+                  <div className="space-y-5">
+                    {coreValues.map((val, idx) => (
+                      <div key={idx} className="flex gap-4 items-start group">
+                        <div className="p-2.5 bg-white rounded-xl border border-slate-200 shadow-xs text-emerald-600 group-hover:bg-emerald-50 group-hover:border-emerald-100 transition-colors shrink-0">
+                          {val.icon}
+                        </div>
+                        <div className="space-y-1">
+                          <h4 className="font-serif font-bold text-slate-800 text-sm group-hover:text-emerald-700 transition-colors">
+                            {val.title}
+                          </h4>
+                          <p className="text-xs text-slate-500 leading-relaxed">
+                            {val.desc}
+                          </p>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+      );
+    }
+
+    // --- SERVICES COMPONENT ---
+    function Services({ selectedServiceIds, onToggleService, onNavigateToPlanner }) {
+      const [activeCategory, setActiveCategory] = useState('All');
+      const [searchQuery, setSearchQuery] = useState('');
+      const [selectedService, setSelectedService] = useState(null);
+
+      const categories = ['All', 'Accounting & Finance', 'Taxation & Returns', 'Registrations & Licences', 'Payments & Levies'];
+
+      const filteredServices = useMemo(() => {
+        return SERVICES_DATA.filter(service => {
+          const matchesCategory = activeCategory === 'All' || service.category === activeCategory;
+          const matchesSearch = service.name.toLowerCase().includes(searchQuery.toLowerCase()) || 
+                                service.description.toLowerCase().includes(searchQuery.toLowerCase());
+          return matchesCategory && matchesSearch;
+        });
+      }, [activeCategory, searchQuery]);
+
+      const getCategoryIcon = (category) => {
+        switch (category) {
+          case 'Accounting & Finance': return <BookOpen className="w-4 h-4 text-emerald-600" />;
+          case 'Taxation & Returns': return <FileCheck className="w-4 h-4 text-emerald-600" />;
+          case 'Registrations & Licences': return <Scale className="w-4 h-4 text-emerald-600" />;
+          case 'Payments & Levies': return <Landmark className="w-4 h-4 text-emerald-600" />;
+          default: return <Briefcase className="w-4 h-4 text-emerald-600" />;
+        }
+      };
+
+      return (
+        <section id="services" className="py-20 bg-white border-b border-slate-100 px-4 lg:px-8">
+          <div className="max-w-7xl mx-auto space-y-12">
+            
+            <div className="text-center max-w-3xl mx-auto space-y-4">
+              <span className="text-xs font-bold uppercase tracking-widest text-emerald-600 bg-emerald-50 px-3 py-1 rounded-full">Our Portfolio</span>
+              <h2 className="text-3xl sm:text-4xl font-serif font-bold text-slate-900 tracking-tight">
+                Comprehensive Compliance Directory
+              </h2>
+              <p className="text-slate-500 text-sm sm:text-base">
+                From accounts finalization to West Bengal land revenue (Khajna), we handle 14 key corporate services under one roof. Click a service to view mandatory documents.
+              </p>
+            </div>
+
+            <div className="bg-slate-50 rounded-2xl p-4 sm:p-6 border border-slate-200 space-y-4 shadow-xs">
+              <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
+                <div className="relative flex-1 max-w-md">
+                  <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 w-4.5 h-4.5" />
+                  <input
+                    type="text"
+                    placeholder="Search services (e.g. GST, PAN, Trade License)..."
+                    value={searchQuery}
+                    onChange={(e) => setSearchQuery(e.target.value)}
+                    className="w-full bg-white border border-slate-200 rounded-xl py-2.5 pl-11 pr-4 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 transition-all text-slate-800 font-medium"
+                  />
+                  {searchQuery && (
+                    <button onClick={() => setSearchQuery('')} className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 cursor-pointer">
+                      <X className="w-4 h-4" />
+                    </button>
+                  )}
+                </div>
+
+                {selectedServiceIds.length > 0 && (
+                  <div className="bg-emerald-50 text-emerald-800 text-xs font-semibold px-4 py-2 rounded-xl border border-emerald-100 flex items-center justify-between gap-3 animate-fade-in">
+                    <span>{selectedServiceIds.length} services selected for your custom quote</span>
+                    <button onClick={onNavigateToPlanner} className="text-emerald-700 hover:text-emerald-900 underline font-bold cursor-pointer">
+                      Configure &rarr;
+                    </button>
+                  </div>
+                )}
+              </div>
+
+              <div className="flex flex-wrap gap-2 pt-1">
+                {categories.map((cat) => (
+                  <button
+                    key={cat}
+                    onClick={() => setActiveCategory(cat)}
+                    className={`px-4 py-2 rounded-lg text-xs font-bold transition-all cursor-pointer ${
+                      activeCategory === cat ? 'bg-emerald-600 text-white shadow-xs' : 'bg-white text-slate-600 hover:bg-slate-100 border border-slate-200'
+                    }`}
+                  >
+                    {cat}
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
+              {filteredServices.map((service, index) => {
+                const isSelected = selectedServiceIds.includes(service.id);
+                return (
+                  <div
+                    key={service.id}
+                    className={`bg-white rounded-xl border p-6 flex flex-col justify-between transition-all duration-300 relative group ${
+                      isSelected ? 'border-emerald-500 ring-2 ring-emerald-500/10 shadow-md bg-emerald-50/5' : 'border-slate-155 hover:border-slate-200 shadow-sm hover:shadow-md'
+                    }`}
+                  >
+                    <div>
+                      <div className="flex justify-between items-start gap-4 mb-4">
+                        <div className="p-3 bg-slate-55 group-hover:bg-emerald-50 rounded-xl transition-colors">
+                          {getCategoryIcon(service.category)}
+                        </div>
+                        <span className="font-mono text-xs font-bold text-slate-300">#{String(service.index).padStart(2, '0')}</span>
+                      </div>
+                      <h3 className="font-serif font-bold text-slate-900 text-lg leading-tight mb-2">{service.name}</h3>
+                      <p className="text-slate-500 text-xs leading-relaxed line-clamp-3">{service.description}</p>
+                    </div>
+
+                    <div className="border-t border-slate-55 pt-4 mt-5 flex items-center justify-between gap-2">
+                      <button onClick={() => setSelectedService(service)} className="text-xs font-bold text-slate-600 hover:text-emerald-600 flex items-center gap-1 cursor-pointer">
+                        <span>Required Papers &amp; Specs</span>
+                        <ChevronRight className="w-3.5 h-3.5" />
+                      </button>
+                      <button
+                        onClick={() => onToggleService(service.id)}
+                        className={`p-2 rounded-lg border transition-all ${
+                          isSelected ? 'bg-red-50 text-red-600 border-red-100' : 'bg-emerald-50 text-emerald-700 border-emerald-100'
+                        }`}
+                      >
+                        {isSelected ? <Minus className="w-4 h-4" /> : <Plus className="w-4 h-4" />}
+                      </button>
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+
+          {/* SERVICE MODAL OVERLAY */}
+          {selectedService && (
+            <div className="fixed inset-0 bg-slate-900/60 backdrop-blur-xs z-50 flex items-center justify-center p-4">
+              <div className="bg-white rounded-2xl shadow-2xl max-w-lg w-full overflow-hidden border border-slate-100 relative max-h-[90vh] flex flex-col">
+                <div className="bg-slate-900 text-white p-6 relative">
+                  <button onClick={() => setSelectedService(null)} className="absolute top-5 right-5 p-1.5 rounded-lg bg-slate-850 text-slate-400 hover:text-white">
+                    <X className="w-5 h-5" />
+                  </button>
+                  <span className="text-[10px] uppercase font-mono font-bold text-emerald-400 bg-emerald-950/80 px-2.5 py-1 rounded-md">{selectedService.category}</span>
+                  <h3 className="font-serif text-xl sm:text-2xl font-bold leading-tight pt-1.5">{selectedService.name}</h3>
+                </div>
+
+                <div className="p-6 overflow-y-auto space-y-6 flex-1 text-sm text-slate-600">
+                  <div className="space-y-2">
+                    <h4 className="font-serif font-bold text-slate-800 text-sm uppercase tracking-wider">Service Focus</h4>
+                    <p className="leading-relaxed">{selectedService.detailedDescription}</p>
+                  </div>
+
+                  <div className="bg-slate-50 rounded-xl p-4 border border-slate-200 space-y-3">
+                    <h4 className="font-serif font-bold text-slate-800 text-xs uppercase tracking-widest flex items-center gap-1.5">
+                      <FileCheck className="w-4 h-4 text-emerald-600" />
+                      <span>Required Documents Checklist</span>
+                    </h4>
+                    <ul className="grid gap-2 text-xs">
+                      {selectedService.documentsRequired.map((doc, idx) => (
+                        <li key={idx} className="flex items-start gap-2 text-slate-700">
+                          <CheckCircle2 className="w-4 h-4 text-emerald-500 shrink-0 mt-0.5" />
+                          <span>{doc}</span>
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+
+                  <div className="grid grid-cols-2 gap-4 text-xs border-t border-slate-100 pt-4">
+                    <div>
+                      <span className="block text-slate-400 font-semibold uppercase tracking-wider">Delivery Timeline</span>
+                      <span className="font-bold text-slate-800 flex items-center gap-1 mt-1">
+                        <Clock className="w-3.5 h-3.5 text-emerald-600" />
+                        {selectedService.timeline}
+                      </span>
+                    </div>
+                    <div>
+                      <span className="block text-slate-400 font-semibold uppercase tracking-wider">Pricing Model</span>
+                      <span className="font-bold text-slate-800 block mt-1">{selectedService.pricingModel}</span>
+                    </div>
+                  </div>
+                </div>
+
+                <div className="bg-slate-50 p-4 border-t border-slate-100 flex items-center justify-between gap-3">
+                  <button onClick={() => setSelectedService(null)} className="px-4 py-2 text-xs font-semibold text-slate-500 hover:text-slate-800">Close</button>
+                  <button
+                    onClick={() => { onToggleService(selectedService.id); setSelectedService(null); }}
+                    className={`px-5 py-2 rounded-xl text-xs font-bold border transition-all ${
+                      selectedServiceIds.includes(selectedService.id) ? 'bg-red-50 text-red-600 border-red-100' : 'bg-emerald-600 text-white'
+                    }`}
+                  >
+                    {selectedServiceIds.includes(selectedService.id) ? 'Remove' : 'Select Service'}
+                  </button>
+                </div>
+              </div>
+            </div>
+          )}
+        </section>
+      );
+    }
+
+    // --- INTERACTIVE ESTIMATOR & PLANNER ---
+    function InteractiveEstimator({ selectedServiceIds, onToggleService, onClearServices, onSelectPredefinedBundle }) {
+      const selectedServices = useMemo(() => {
+        return SERVICES_DATA.filter(s => selectedServiceIds.includes(s.id));
+      }, [selectedServiceIds]);
+
+      const consolidatedDocuments = useMemo(() => {
+        const docsSet = new Set();
+        selectedServices.forEach(s => s.documentsRequired.forEach(d => docsSet.add(d)));
+        return Array.from(docsSet);
+      }, [selectedServices]);
+
+      const bundles = [
+        { name: "Startup Launch Essentials", desc: "Acquire trade licenses, fresh PAN, and initiate monthly accounting logs.", services: ['trade-licence', 'pan-card', 'accounting-services'], badge: "Popular" },
+        { name: "Corporate Year-End Prep", desc: "Accounts audit file coordination, balance sheet compiling, and year finalization.", services: ['accounts-finalization', 'balance-sheet', 'audit-work'], badge: "Enterprise" },
+        { name: "Regular Tax Compliance", desc: "Stay fully compliant with GST filing schedules, TDS quarterly logs, and transit invoicing.", services: ['gst-return', 'tds-returns', 'e-invoicing-e-waybill'], badge: "Tax Pack" }
+      ];
+
+      const complexityLevel = useMemo(() => {
+        if (selectedServices.length === 0) return 'None';
+        if (selectedServices.length <= 2) return 'Standard Portfolio';
+        if (selectedServices.length <= 5) return 'Moderate Compliance';
+        return 'Comprehensive Corporate Account';
+      }, [selectedServices]);
+
+      const calculatedTimeline = useMemo(() => {
+        if (selectedServices.length === 0) return '0 Days';
+        let maxDays = 1;
+        selectedServices.forEach(s => {
+          const match = s.timeline.match(/(\d+)/);
+          if (match) {
+            const days = parseInt(match[1]);
+            if (days > maxDays) maxDays = days;
+          }
+        });
+        return `${maxDays}-${maxDays + 2} Business Days (Critical Path)`;
+      }, [selectedServices]);
+
+      return (
+        <section id="estimator" className="py-20 bg-slate-50 border-b border-slate-100 px-4 lg:px-8">
+          <div className="max-w-7xl mx-auto space-y-12">
+            <div className="text-center max-w-3xl mx-auto space-y-4">
+              <span className="text-xs font-bold uppercase tracking-widest text-emerald-600 bg-emerald-50 px-3 py-1 rounded-full">Dynamic Planner</span>
+              <h2 className="text-3xl sm:text-4xl font-serif font-bold text-slate-900 tracking-tight">Compliance &amp; Quote Planner</h2>
+              <p className="text-slate-500 text-sm sm:text-base">
+                Click a popular predefined bundle below or choose services above. We dynamically calculate combined paperwork files, state compliance densities, and estimate delivery logs.
+              </p>
+            </div>
+
+            <div className="grid md:grid-cols-3 gap-6">
+              {bundles.map((b, idx) => {
+                const isAllSelected = b.services.every(id => selectedServiceIds.includes(id));
+                return (
+                  <div key={idx} className={`bg-white rounded-xl p-5 border transition-all duration-200 relative flex flex-col justify-between ${
+                    isAllSelected ? 'border-emerald-500 ring-2 ring-emerald-500/5 shadow-md' : 'border-slate-200 shadow-xs'
+                  }`}>
+                    <span className="absolute top-4 right-4 bg-emerald-50 text-emerald-700 text-[10px] font-bold px-2.5 py-0.5 rounded-full uppercase tracking-wider">{b.badge}</span>
+                    <div className="space-y-1 pr-12">
+                      <h3 className="font-serif font-bold text-slate-900 text-base">{b.name}</h3>
+                      <p className="text-slate-550 text-xs leading-relaxed">{b.desc}</p>
+                    </div>
+                    <button
+                      onClick={() => onSelectPredefinedBundle(b.services)}
+                      className={`mt-4 w-full py-2 rounded-lg text-xs font-bold cursor-pointer ${
+                        isAllSelected ? 'bg-slate-900 text-white' : 'bg-emerald-50 text-emerald-700 hover:bg-emerald-100'
+                      }`}
+                    >
+                      {isAllSelected ? '\u2713 Active Bundle Selected' : 'Select This Bundle'}
+                    </button>
+                  </div>
+                );
+              })}
+            </div>
+
+            <div className="grid lg:grid-cols-12 gap-8 pt-4">
+              <div className="lg:col-span-7">
+                <div className="bg-white rounded-2xl p-6 border border-slate-150 shadow-sm space-y-6">
+                  <div className="flex justify-between items-center pb-4 border-b border-slate-100">
+                    <div className="flex items-center gap-2">
+                      <Layers className="w-5 h-5 text-emerald-600" />
+                      <h3 className="font-serif font-bold text-slate-900 text-lg">Your Selected Items</h3>
+                    </div>
+                    {selectedServices.length > 0 && (
+                      <button onClick={onClearServices} className="text-xs font-bold text-red-500 hover:text-red-700 flex items-center gap-1 cursor-pointer">
+                        <Trash2 className="w-4 h-4" />
+                        <span>Clear All ({selectedServices.length})</span>
+                      </button>
+                    )}
+                  </div>
+
+                  {selectedServices.length > 0 ? (
+                    <div className="space-y-3 max-h-[300px] overflow-y-auto pr-1">
+                      {selectedServices.map(s => (
+                        <div key={s.id} className="bg-slate-50 p-3.5 rounded-xl border border-slate-100 flex items-center justify-between gap-4">
+                          <div>
+                            <span className="text-[10px] uppercase font-mono tracking-wider text-slate-400 font-bold">{s.category}</span>
+                            <h4 className="font-serif font-bold text-slate-800 text-sm">{s.name}</h4>
+                          </div>
+                          <button onClick={() => onToggleService(s.id)} className="p-1 text-slate-300 hover:text-red-500 transition-colors cursor-pointer">
+                            <Trash2 className="w-4 h-4" />
+                          </button>
+                        </div>
+                      ))}
+                    </div>
+                  ) : (
+                    <div className="text-center py-12 px-4 space-y-4">
+                      <p className="text-sm font-semibold text-slate-850">Your workspace is currently empty.</p>
+                      <p className="text-xs text-slate-400 max-w-sm mx-auto">Scroll up to our service directory to select custom tasks, or select a predefined bundle.</p>
+                    </div>
+                  )}
+                </div>
+              </div>
+
+              <div className="lg:col-span-5">
+                <div className="bg-slate-900 text-white rounded-2xl p-6 sm:p-8 space-y-6 shadow-lg border border-slate-800 relative">
+                  <h3 className="font-serif font-bold text-lg flex items-center gap-2">
+                    <Layers className="w-5 h-5 text-emerald-400" />
+                    <span>Compliance Estimation</span>
+                  </h3>
+
+                  <div className="space-y-4 text-sm">
+                    <div className="flex justify-between items-center py-2.5 border-b border-slate-800">
+                      <span className="text-slate-400 text-xs">Workforce Load</span>
+                      <span className={`font-semibold px-2.5 py-0.5 rounded-full text-xs ${
+                        selectedServices.length === 0 ? 'bg-slate-800 text-slate-550' : 'bg-emerald-500/20 text-emerald-300'
+                      }`}>{complexityLevel}</span>
+                    </div>
+                    <div className="flex justify-between items-center py-2.5 border-b border-slate-800">
+                      <span className="text-slate-400 text-xs">Estimated Timeline</span>
+                      <span className="font-bold font-mono text-xs text-emerald-400 flex items-center gap-1"><Clock className="w-3.5 h-3.5" />{calculatedTimeline}</span>
+                    </div>
+                  </div>
+
+                  {consolidatedDocuments.length > 0 && (
+                    <div className="space-y-3 bg-slate-950 p-4 rounded-xl border border-slate-800">
+                      <h4 className="font-serif font-bold text-xs uppercase tracking-wider text-slate-300 flex items-center gap-1.5">
+                        <FileCheck className="w-4 h-4 text-emerald-400" />
+                        <span>Unified Papers Checklist ({consolidatedDocuments.length})</span>
+                      </h4>
+                      <ul className="grid gap-1.5 text-xs text-slate-400 max-h-[120px] overflow-y-auto pr-1">
+                        {consolidatedDocuments.map((doc, idx) => (
+                          <li key={idx} className="flex items-start gap-2">
+                            <CheckCircle className="w-3.5 h-3.5 text-emerald-500 shrink-0 mt-0.5" />
+                            <span>{doc}</span>
+                          </li>
+                        ))}
+                      </ul>
+                    </div>
+                  )}
+
+                  <div className="pt-2">
+                    <button
+                      disabled={selectedServices.length === 0}
+                      onClick={() => document.getElementById('contact').scrollIntoView({ behavior: 'smooth' })}
+                      className={`w-full py-3 rounded-xl font-bold text-xs tracking-wider uppercase transition-all duration-200 flex items-center justify-center gap-2 ${
+                        selectedServices.length === 0 ? 'bg-slate-800 text-slate-500 cursor-not-allowed' : 'bg-emerald-600 hover:bg-emerald-500 text-white'
+                      }`}
+                    >
+                      <span>Sync Planner to Consultation</span>
+                      <ChevronRight className="w-4 h-4" />
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+      );
+    }
+
+    // --- FAQ & TESTIMONIALS ---
+    function FAQ() {
+      const [openId, setOpenId] = useState('faq-1');
+
+      return (
+        <section id="faq" className="py-20 bg-slate-50 px-4 lg:px-8 border-b border-slate-100">
+          <div className="max-w-7xl mx-auto grid lg:grid-cols-12 gap-12 items-start">
+            <div className="lg:col-span-7 space-y-8">
+              <div className="space-y-4">
+                <span className="text-xs font-bold uppercase tracking-widest text-emerald-600 bg-emerald-50 px-3 py-1 rounded-full">Common Queries</span>
+                <h2 className="text-3xl font-serif font-bold text-slate-900 tracking-tight">Frequently Asked Questions</h2>
+                <p className="text-slate-500 text-sm">Have queries about taxation files, West Bengal land mutations (Khajna), or audit coordination? Read solutions prepared by our consulting experts.</p>
+              </div>
+
+              <div className="space-y-4">
+                {FAQS.map(faq => {
+                  const isOpen = openId === faq.id;
+                  return (
+                    <div key={faq.id} className="bg-white rounded-xl border border-slate-200 overflow-hidden shadow-xs transition-all duration-300">
+                      <button onClick={() => setOpenId(isOpen ? null : faq.id)} className="w-full text-left p-5 flex justify-between items-center gap-4 hover:bg-slate-50/50 transition-colors cursor-pointer font-serif font-bold text-slate-800 text-sm sm:text-base">
+                        <span>{faq.question}</span>
+                        <span className="p-1 rounded-md bg-slate-100 text-slate-500">{isOpen ? <ChevronUp className="w-4 h-4" /> : <ChevronDown className="w-4 h-4" />}</span>
+                      </button>
+                      {isOpen && (
+                        <div className="px-5 pb-5 pt-1 text-slate-600 text-sm leading-relaxed border-t border-slate-100 bg-slate-50/20">{faq.answer}</div>
+                      )}
+                    </div>
+                  );
+                })}
+              </div>
+            </div>
+
+            <div className="lg:col-span-5 space-y-8 lg:sticky lg:top-24">
+              <div className="space-y-4">
+                <span className="text-xs font-bold uppercase tracking-widest text-emerald-600 bg-emerald-50 px-3 py-1 rounded-full">Success Stories</span>
+                <h2 className="text-3xl font-serif font-bold text-slate-900 tracking-tight">What Our Clients Say</h2>
+                <p className="text-slate-500 text-sm">We take pride in delivering exceptionally reliable filings for businesses across West Bengal.</p>
+              </div>
+
+              <div className="space-y-6">
+                {TESTIMONIALS.map(t => (
+                  <div key={t.id} className="bg-white rounded-2xl p-6 border border-slate-150 shadow-sm space-y-4">
+                    <div className="flex items-center gap-1">
+                      {[...Array(t.rating)].map((_, i) => <Star key={i} className="w-4 h-4 text-amber-500 fill-amber-500" />)}
+                    </div>
+                    <p className="text-slate-600 text-xs sm:text-sm leading-relaxed italic">{"“"}{t.text}{"”"}</p>
+                    <div className="flex items-center gap-3 border-t border-slate-100 pt-4">
+                      <div className="w-10 h-10 rounded-full bg-emerald-100 flex items-center justify-center text-emerald-800 font-bold font-serif text-sm">
+                        {t.name.split(' ').map(n => n[0]).join('')}
+                      </div>
+                      <div>
+                        <h4 className="font-serif font-bold text-slate-900 text-sm">{t.name}</h4>
+                        <span className="text-slate-400 text-xs font-medium block">{t.role} {t.company && `at ${t.company}`}</span>
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+        </section>
+      );
+    }
+
+    // --- CONTACT FORM & REAL-TIME CALLBACK QUEUE CONSOLE ---
+    function ContactForm({ selectedServiceIds, onToggleService }) {
+      const [fullName, setFullName] = useState('');
+      const [email, setEmail] = useState('');
+      const [phone, setPhone] = useState('');
+      const [preferredContact, setPreferredContact] = useState('phone');
+      const [message, setMessage] = useState('');
+      
+      const [inquiries, setInquiries] = useState([]);
+      const [isSubmitted, setIsSubmitted] = useState(false);
+      const [isSubmitting, setIsSubmitting] = useState(false);
+      const [errorMessage, setErrorMessage] = useState('');
+      const [expandedInquiryId, setExpandedInquiryId] = useState(null);
+      const [copiedText, setCopiedText] = useState({});
+
+      useEffect(() => {
+        const stored = localStorage.getItem('biba_inquiries');
+        if (stored) {
+          try { setInquiries(JSON.parse(stored)); } catch (e) { console.error(e); }
+        }
+      }, []);
+
+      const handleCopy = (text, key) => {
+        navigator.clipboard.writeText(text);
+        setCopiedText(prev => ({ ...prev, [key]: true }));
+        setTimeout(() => setCopiedText(prev => ({ ...prev, [key]: false })), 2000);
+      };
+
+      const handleSubmit = (e) => {
+        e.preventDefault();
+        setErrorMessage('');
+        setIsSubmitted(false);
+
+        if (!fullName.trim()) return setErrorMessage('Full name is required.');
+        if (!phone.trim() && preferredContact === 'phone') return setErrorMessage('Phone is required.');
+        if (!email.trim() && preferredContact === 'email') return setErrorMessage('Email is required.');
+
+        setIsSubmitting(true);
+
+        setTimeout(() => {
+          const selectedServiceNames = SERVICES_DATA
+            .filter(s => selectedServiceIds.includes(s.id))
+            .map(s => s.name);
+
+          const localDrafts = generateLocalDrafts(fullName, preferredContact, phone, email, selectedServiceNames, message);
+
+          const newInquiry = {
+            id: 'inq-' + Date.now(),
+            fullName,
+            email,
+            phone,
+            preferredContact,
+            selectedServiceIds: [...selectedServiceIds],
+            message,
+            submittedAt: new Date().toLocaleString(),
+            status: 'Contacted',
+            serverLogs: localDrafts.logs,
+            aiEmailSubject: localDrafts.subject,
+            aiEmailBody: localDrafts.emailBody,
+            aiSms: localDrafts.smsText,
+            statusMessage: 'Client Queue (Free Offline)',
+            engineType: 'static'
+          };
+
+          const updated = [newInquiry, ...inquiries];
+          setInquiries(updated);
+          localStorage.setItem('biba_inquiries', JSON.stringify(updated));
+
+          setExpandedInquiryId(newInquiry.id);
+          setFullName('');
+          setEmail('');
+          setPhone('');
+          setMessage('');
+          setIsSubmitted(true);
+          setIsSubmitting(false);
+
+          setTimeout(() => setIsSubmitted(false), 8000);
+        }, 800);
+      };
+
+      const handleDeleteInquiry = (id) => {
+        const filtered = inquiries.filter(i => i.id !== id);
+        setInquiries(filtered);
+        localStorage.setItem('biba_inquiries', JSON.stringify(filtered));
+        if (expandedInquiryId === id) setExpandedInquiryId(null);
+      };
+
+      return (
+        <section id="contact" className="py-20 bg-white px-4 lg:px-8 border-b border-slate-100">
+          <div className="max-w-7xl mx-auto space-y-12">
+            
+            <div className="text-center max-w-3xl mx-auto space-y-4">
+              <span className="text-xs font-bold uppercase tracking-widest text-emerald-600 bg-emerald-50 px-3 py-1 rounded-full">Inquiry Desk</span>
+              <h2 className="text-3xl sm:text-4xl font-serif font-bold text-slate-900 tracking-tight">Consultation Request {"&"} Callback</h2>
+              <p className="text-slate-500 text-sm">Submit your ledger profile. Our static-queue client engine drafts immediate consultation files and lets you link instantly over WhatsApp.</p>
+            </div>
+
+            <div className="grid lg:grid-cols-12 gap-12 lg:gap-8 items-start">
+              <div className="lg:col-span-5">
+                <div className="bg-slate-900 text-white rounded-2xl p-6 sm:p-8 space-y-8 relative overflow-hidden">
+                  <div className="absolute top-0 right-0 w-32 h-32 bg-emerald-500/10 rounded-full blur-2xl" />
+                  <div className="space-y-3">
+                    <h3 className="font-serif font-bold text-xl text-emerald-400">BIBA Communication</h3>
+                    <p className="text-slate-300 text-xs sm:text-sm leading-relaxed">{"“"}{COMPANY_INFO.slogans[0]}{"”"}</p>
+                  </div>
+
+                  <div className="space-y-4 text-xs sm:text-sm">
+                    <div className="flex items-start gap-4">
+                      <div className="p-2.5 bg-slate-800 rounded-lg text-emerald-400 shrink-0"><Phone className="w-5 h-5" /></div>
+                      <div>
+                        <span className="block text-slate-400 text-xs font-semibold uppercase tracking-wider">Direct Hotlines</span>
+                        {COMPANY_INFO.contacts.phones.map((phone, idx) => (
+                          <a key={idx} href={`tel:${phone.replace(/\s+/g, '')}`} className="font-bold hover:text-emerald-400 transition-colors block mt-1">{phone}</a>
+                        ))}
+                      </div>
+                    </div>
+
+                    <div className="flex items-start gap-4">
+                      <div className="p-2.5 bg-slate-800 rounded-lg text-emerald-400 shrink-0"><Mail className="w-5 h-5" /></div>
+                      <div>
+                        <span className="block text-slate-400 text-xs font-semibold uppercase tracking-wider">Email Inquiry</span>
+                        <a href={`mailto:${COMPANY_INFO.contacts.email}`} className="font-bold hover:text-emerald-400 transition-colors block mt-1">{COMPANY_INFO.contacts.email}</a>
+                      </div>
+                    </div>
+
+                    <div className="flex items-start gap-4">
+                      <div className="p-2.5 bg-slate-800 rounded-lg text-emerald-400 shrink-0"><MapPin className="w-5 h-5" /></div>
+                      <div>
+                        <span className="block text-slate-400 text-xs font-semibold uppercase tracking-wider">Office Location</span>
+                        <span className="font-bold block mt-1">{COMPANY_INFO.contacts.address}</span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <div className="lg:col-span-7">
+                <div className="bg-slate-50 rounded-2xl p-6 sm:p-8 border border-slate-200 shadow-xs space-y-6">
+                  <h3 className="font-serif font-bold text-slate-900 text-lg flex items-center gap-2 pb-2 border-b border-slate-200">
+                    <Layers className="w-5 h-5 text-emerald-600" />
+                    <span>Submit Callback Details</span>
+                  </h3>
+
+                  <form onSubmit={handleSubmit} className="space-y-5">
+                    {errorMessage && (
+                      <div className="bg-red-50 text-red-700 p-3.5 rounded-xl border border-red-100 text-xs font-semibold flex items-center gap-2">
+                        <AlertTriangle className="w-5 h-5 text-red-600 shrink-0" />
+                        <span>{errorMessage}</span>
+                      </div>
+                    )}
+
+                    {isSubmitted && (
+                      <div className="bg-emerald-50 text-emerald-850 p-4 rounded-xl border border-emerald-100 text-xs font-semibold space-y-1">
+                        <p className="font-bold">Inquiry queued successfully into local console memory!</p>
+                        <p className="text-slate-600 font-normal">Scroll down to view local logs, trigger immediate WhatsApp notifications, or launch structured mail client scripts.</p>
+                      </div>
+                    )}
+
+                    <div className="grid sm:grid-cols-2 gap-5">
+                      <div className="space-y-1.5">
+                        <label className="text-xs font-bold text-slate-700 uppercase tracking-wider">Full Name</label>
+                        <input type="text" required disabled={isSubmitting} placeholder="Rajat Ghosh" value={fullName} onChange={e => setFullName(e.target.value)} className="w-full bg-white border border-slate-200 rounded-lg p-2.5 text-sm text-slate-800 focus:ring-2 focus:ring-emerald-500/20 focus:outline-none focus:border-emerald-500 transition-all font-medium" />
+                      </div>
+
+                      <div className="space-y-1.5">
+                        <label className="text-xs font-bold text-slate-700 uppercase tracking-wider">Preferred Channel</label>
+                        <div className="grid grid-cols-2 gap-2">
+                          <button type="button" onClick={() => setPreferredContact('phone')} className={`py-2 rounded-lg text-xs font-bold border transition-all ${preferredContact === 'phone' ? 'bg-emerald-600 text-white' : 'bg-white text-slate-600 border-slate-200'}`}>Phone Call</button>
+                          <button type="button" onClick={() => setPreferredContact('email')} className={`py-2 rounded-lg text-xs font-bold border transition-all ${preferredContact === 'email' ? 'bg-emerald-600 text-white' : 'bg-white text-slate-600 border-slate-200'}`}>Email Consultation</button>
+                        </div>
+                      </div>
+                    </div>
+
+                    <div className="grid sm:grid-cols-2 gap-5">
+                      <div className="space-y-1.5">
+                        <label className="text-xs font-bold text-slate-700 uppercase tracking-wider">Contact Phone</label>
+                        <input type="tel" required={preferredContact === 'phone'} placeholder="+91 XXXXX XXXXX" value={phone} onChange={e => setPhone(e.target.value)} className="w-full bg-white border border-slate-200 rounded-lg p-2.5 text-sm text-slate-800 focus:ring-2 focus:ring-emerald-500/20 focus:outline-none focus:border-emerald-500 transition-all font-medium" />
+                      </div>
+
+                      <div className="space-y-1.5">
+                        <label className="text-xs font-bold text-slate-700 uppercase tracking-wider">Email Address</label>
+                        <input type="email" required={preferredContact === 'email'} placeholder="name@example.com" value={email} onChange={e => setEmail(e.target.value)} className="w-full bg-white border border-slate-200 rounded-lg p-2.5 text-sm text-slate-800 focus:ring-2 focus:ring-emerald-500/20 focus:outline-none focus:border-emerald-500 transition-all font-medium" />
+                      </div>
+                    </div>
+
+                    <div className="space-y-1.5">
+                      <label className="text-xs font-bold text-slate-700 uppercase tracking-wider block">Selected Services ({selectedServiceIds.length})</label>
+                      {selectedServiceIds.length > 0 ? (
+                        <div className="flex flex-wrap gap-1.5 bg-white p-3 rounded-xl border border-slate-200">
+                          {SERVICES_DATA.filter(s => selectedServiceIds.includes(s.id)).map(s => (
+                            <span key={s.id} className="inline-flex items-center gap-1 bg-slate-100 text-slate-800 text-[11px] font-bold py-1 px-2.5 rounded-md border border-slate-200">
+                              <span>{s.name}</span>
+                              <button type="button" onClick={() => onToggleService(s.id)} className="text-slate-400 hover:text-red-500 font-bold ml-1 cursor-pointer">&times;</button>
+                            </span>
+                          ))}
+                        </div>
+                      ) : (
+                        <div className="bg-amber-50 text-amber-800 text-xs p-3 rounded-xl border border-amber-100">
+                          No services selected. Form will submit as standard consultation inquiry. Select above to plan.
+                        </div>
+                      )}
+                    </div>
+
+                    <div className="space-y-1.5">
+                      <label className="text-xs font-bold text-slate-700 uppercase tracking-wider">Message Details</label>
+                      <textarea rows={4} placeholder="Describe turnover scale, tax notices, land registry khatian, or key targets..." value={message} onChange={e => setMessage(e.target.value)} className="w-full bg-white border border-slate-200 rounded-lg p-2.5 text-sm text-slate-800 focus:ring-2 focus:ring-emerald-500/20 focus:outline-none focus:border-emerald-500 transition-all font-medium" />
+                    </div>
+
+                    <button type="submit" disabled={isSubmitting} className="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-3 px-6 rounded-xl text-xs tracking-wider uppercase transition-all flex items-center justify-center gap-2 cursor-pointer">
+                      {isSubmitting ? <><Loader2 className="w-4 h-4 animate-spin" /><span>Syncing Queue Memory...</span></> : <><LucideIcon name="Send" className="w-4 h-4" /><span>Join Callback Queue</span></>}
+                    </button>
+                  </form>
+                </div>
+              </div>
+            </div>
+
+            {inquiries.length > 0 && (
+              <div className="bg-slate-50 rounded-2xl p-6 border border-slate-200 shadow-xs space-y-4">
+                <div className="space-y-1">
+                  <h3 className="font-serif font-bold text-slate-800 text-base flex items-center gap-2">
+                    <Sparkles className="w-5 h-5 text-emerald-600 animate-pulse" />
+                    <span>Real-Time Callback Queue Console ({inquiries.length})</span>
+                  </h3>
+                  <p className="text-xs text-slate-500">View static memory queue files, local compliance log sequences, and pre-written client responses below.</p>
+                </div>
+
+                <div className="space-y-4 max-h-[600px] overflow-y-auto pr-1">
+                  {inquiries.map(inq => {
+                    const isExpanded = expandedInquiryId === inq.id;
+                    return (
+                      <div key={inq.id} className="bg-white rounded-xl p-5 border border-slate-200 shadow-xs space-y-4 relative">
+                        <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-3 pb-3 border-b border-slate-100">
+                          <div>
+                            <span className="text-[10px] font-bold text-slate-400 block">{inq.submittedAt}</span>
+                            <h4 className="font-serif font-bold text-slate-800 text-base leading-tight">{inq.fullName}</h4>
+                            <div className="flex flex-wrap gap-1.5 mt-1">
+                              <span className="text-[10px] bg-slate-100 text-slate-600 font-semibold px-2 py-0.5 rounded-md">Channel: {inq.preferredContact === 'phone' ? '📞 Call' : '✉️ Email'}</span>
+                              <span className="text-[10px] bg-slate-100 text-slate-600 font-mono px-2 py-0.5 rounded-md">ID: {inq.id}</span>
+                              <span className="text-[10px] bg-indigo-50 text-indigo-700 font-bold px-2 py-0.5 rounded-md border border-indigo-100">Engine: Static Memory</span>
+                            </div>
+                          </div>
+
+                          <div className="flex items-center gap-2">
+                            <span className="text-[11px] font-bold px-2.5 py-1 rounded-full bg-amber-50 text-amber-700 border border-amber-100">Pending Advisor Action</span>
+                            <button onClick={() => handleDeleteInquiry(inq.id)} className="p-1 rounded-lg text-slate-300 hover:text-red-500 transition-colors cursor-pointer"><Trash2 className="w-4 h-4" /></button>
+                          </div>
+                        </div>
+
+                        <div className="grid sm:grid-cols-2 gap-4 text-xs">
+                          <div className="space-y-1 text-slate-600">
+                            <div><strong>Phone:</strong> {inq.phone || 'N/A'}</div>
+                            <div><strong>Email:</strong> {inq.email || 'N/A'}</div>
+                            <div className="pt-1">
+                              <strong>Targets:</strong>
+                              <div className="flex flex-wrap gap-1 mt-1">
+                                {inq.selectedServiceIds.length > 0 ? (
+                                  SERVICES_DATA.filter(s => inq.selectedServiceIds.includes(s.id)).map(s => (
+                                    <span key={s.id} className="text-[9px] font-bold bg-emerald-50 text-emerald-800 border border-emerald-100 px-1.5 py-0.5 rounded-sm">{s.name}</span>
+                                  ))
+                                ) : <span className="text-[9px] bg-slate-55 text-slate-600 border px-1.5 py-0.5 rounded-sm">General Consultation</span>}
+                              </div>
+                            </div>
+                          </div>
+                          <div className="bg-slate-50 p-3 rounded-lg border border-slate-200">
+                            <span className="text-[9px] font-bold text-slate-400 uppercase tracking-widest block mb-1">User Query Notes</span>
+                            <p className="text-slate-700 leading-relaxed pr-8 select-text">{inq.message || 'No custom query parameters specified.'}</p>
+                          </div>
+                        </div>
+
+                        {/* ZERO COST DIRECT TOOLBAR */}
+                        <div className="bg-slate-50 rounded-xl p-3.5 border border-slate-200 flex flex-col md:flex-row gap-4 items-center justify-between">
+                          <div className="space-y-0.5 text-center md:text-left">
+                            <span className="text-[11px] font-extrabold text-slate-700 uppercase tracking-wider flex items-center justify-center md:justify-start gap-1.5">
+                              <Sparkles className="w-3.5 h-3.5 text-emerald-600 animate-pulse" />
+                              <span>Zero-Cost Direct Actions (100% Free)</span>
+                            </span>
+                            <p className="text-[10px] text-slate-500 max-w-md">No servers required. Open pre-populated records on WhatsApp, dial callback paths, or generate structured mail drafts instantly.</p>
+                          </div>
+
+                          <div className="flex flex-wrap justify-center gap-2 w-full md:w-auto shrink-0">
+                            <a href={getWhatsAppUrl(inq)} target="_blank" rel="noreferrer" className="bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-[11px] py-2 px-3.5 rounded-lg flex items-center justify-center gap-1.5 w-full sm:w-auto shadow-sm shadow-emerald-600/10">
+                              <MessageSquare className="w-4 h-4" />
+                              <span>Send on WhatsApp</span>
+                            </a>
+                            {inq.email && (
+                              <a href={`mailto:${inq.email}?subject=${encodeURIComponent(inq.aiEmailSubject || '')}&body=${encodeURIComponent(inq.aiEmailBody || '')}`} className="bg-blue-600 hover:bg-blue-700 text-white font-bold text-[11px] py-2 px-3.5 rounded-lg flex items-center justify-center gap-1.5 w-full sm:w-auto shadow-sm">
+                                <MailOpen className="w-4 h-4" />
+                                <span>Email Structured Reply</span>
+                              </a>
+                            )}
+                            {inq.phone && (
+                              <a href={`tel:${inq.phone.replace(/\s+/g, '')}`} className="bg-slate-800 hover:bg-slate-900 text-white font-bold text-[11px] py-2 px-3.5 rounded-lg flex items-center justify-center gap-1.5 w-full sm:w-auto shadow-sm">
+                                <PhoneCall className="w-4 h-4" />
+                                <span>Dial Hotline</span>
+                              </a>
+                            )}
+                          </div>
+                        </div>
+
+                        <div>
+                          <button onClick={() => setExpandedInquiryId(isExpanded ? null : inq.id)} className="w-full bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-bold py-2 px-4 rounded-lg transition-all flex items-center justify-between cursor-pointer">
+                            <span className="flex items-center gap-2">
+                              <Terminal className="w-4 h-4 text-emerald-600" />
+                              <span>{isExpanded ? 'Hide Local Processing Logs & Draft Files' : 'View Local Processing Logs & Draft Files'}</span>
+                            </span>
+                            {isExpanded ? <ChevronUp className="w-4 h-4" /> : <ChevronDown className="w-4 h-4" />}
+                          </button>
+                        </div>
+
+                        {isExpanded && (
+                          <div className="space-y-4 animate-fade-in">
+                            <div className="space-y-1.5">
+                              <span className="text-[10px] font-bold text-slate-500 uppercase tracking-wider block">Local Sequence Logs</span>
+                              <div className="bg-slate-950 rounded-xl p-4 font-mono text-[11px] leading-relaxed text-emerald-400 border border-slate-800 max-h-[160px] overflow-y-auto space-y-1">
+                                {inq.serverLogs.map((log, index) => (
+                                  <div key={index} className="flex gap-2"><span className="text-slate-600">❯</span><span>{log}</span></div>
+                                ))}
+                              </div>
+                            </div>
+
+                            <div className="grid md:grid-cols-2 gap-4">
+                              <div className="bg-slate-50 rounded-xl p-4 border border-slate-200 space-y-2 relative">
+                                <span className="text-[10px] font-bold text-emerald-600 bg-emerald-50 border border-emerald-100 px-2 py-0.5 rounded-full absolute top-4 right-4 uppercase tracking-wider">Email Draft</span>
+                                <h5 className="text-xs font-bold text-slate-700">Client Response Email Template</h5>
+                                <div className="space-y-2 pt-1 text-xs">
+                                  <div className="bg-white p-2.5 rounded-lg border border-slate-200 font-medium text-slate-800 flex justify-between items-center">
+                                    <span className="truncate"><strong>Subject:</strong> {inq.aiEmailSubject}</span>
+                                    <button onClick={() => handleCopy(inq.aiEmailSubject, 'sub')} className="text-slate-400 hover:text-emerald-600 transition-colors cursor-pointer">{copiedText['sub'] ? 'Copied' : <Copy className="w-3.5 h-3.5" />}</button>
+                                  </div>
+                                  <div className="bg-white p-3 rounded-lg border border-slate-200 text-slate-600 whitespace-pre-wrap leading-relaxed max-h-[150px] overflow-y-auto relative">
+                                    <button onClick={() => handleCopy(inq.aiEmailBody, 'body')} className="text-slate-400 hover:text-emerald-600 transition-colors absolute top-2 right-2 cursor-pointer">{copiedText['body'] ? 'Copied' : <Copy className="w-3.5 h-3.5" />}</button>
+                                    {inq.aiEmailBody}
+                                  </div>
+                                </div>
+                              </div>
+
+                              <div className="bg-slate-50 rounded-xl p-4 border border-slate-200 space-y-2 relative">
+                                <span className="text-[10px] font-bold text-blue-600 bg-blue-50 border border-blue-100 px-2 py-0.5 rounded-full absolute top-4 right-4 uppercase tracking-wider">SMS Draft</span>
+                                <h5 className="text-xs font-bold text-slate-700">Advisor Direct Dispatch SMS</h5>
+                                <div className="space-y-2 pt-1 text-xs">
+                                  <div className="bg-white p-3 rounded-lg border border-slate-200 text-slate-600 font-mono text-[10px] leading-relaxed max-h-[120px] overflow-y-auto relative">
+                                    <button onClick={() => handleCopy(inq.aiSms, 'sms')} className="text-slate-400 hover:text-emerald-600 transition-colors absolute top-2 right-2 cursor-pointer">{copiedText['sms'] ? 'Copied' : <Copy className="w-3.5 h-3.5" />}</button>
+                                    {inq.aiSms}
+                                  </div>
+                                </div>
+                              </div>
+                            </div>
+                          </div>
+                        )}
+                      </div>
+                    );
+                  })}
+                </div>
+              </div>
+            )}
+          </div>
+        </section>
+      );
+    }
+
+    // --- FOOTER COMPONENT ---
+    function Footer() {
+      return (
+        <footer className="bg-slate-950 text-slate-400 text-sm border-t border-slate-900 pt-16 pb-8 px-4 lg:px-8">
+          <div className="max-w-7xl mx-auto space-y-12">
+            <div className="grid grid-cols-1 md:grid-cols-12 gap-8 pb-12 border-b border-slate-900">
+              <div className="md:col-span-5 space-y-5">
+                <div className="flex items-center gap-2.5">
+                  <div className="w-9 h-9 rounded-lg bg-emerald-600 flex items-center justify-center text-white"><Briefcase className="w-5 h-5" /></div>
+                  <div>
+                    <span className="font-serif text-lg font-bold tracking-tight text-white block leading-tight">BIBA</span>
+                    <span className="font-sans text-[10px] tracking-widest font-semibold text-emerald-500 block uppercase leading-none mt-0.5">Communication</span>
+                  </div>
+                </div>
+                <p className="text-xs sm:text-sm text-slate-400 leading-relaxed max-w-sm">
+                  We specialize in balance sheet finalization, GST filings, trade license coordination, and municipal land tax across Kolkata and West Bengal.
+                </p>
+                <div className="p-4 bg-slate-900/60 rounded-xl border border-slate-900 text-xs text-slate-400 italic">
+                  {"“"}{COMPANY_INFO.slogans[0]}{"”"}
+                </div>
+              </div>
+
+              <div className="md:col-span-3 space-y-4">
+                <h4 className="font-serif font-bold text-white text-xs uppercase tracking-widest">Navigation</h4>
+                <ul className="space-y-2.5 text-xs">
+                  {['about', 'services', 'estimator', 'faq', 'contact'].map(sec => (
+                    <li key={sec}><a href={`#${sec}`} className="hover:text-emerald-400 transition-colors capitalize">{sec === 'estimator' ? 'Quote Planner' : sec.replace('-', ' ')}</a></li>
+                  ))}
+                </ul>
+              </div>
+
+              <div className="md:col-span-4 space-y-4">
+                <h4 className="font-serif font-bold text-white text-xs uppercase tracking-widest">Contact Desk</h4>
+                <div className="space-y-3 text-xs">
+                  <div className="flex items-center gap-2.5">
+                    <Phone className="w-4 h-4 text-emerald-500" />
+                    <div className="flex flex-col">
+                      {COMPANY_INFO.contacts.phones.map((p, i) => <a key={i} href={`tel:${p.replace(/\s+/g, '')}`} className="hover:text-white transition-colors">{p}</a>)}
+                    </div>
+                  </div>
+                  <div className="flex items-center gap-2.5">
+                    <Mail className="w-4 h-4 text-emerald-500" />
+                    <a href={`mailto:${COMPANY_INFO.contacts.email}`} className="hover:text-white transition-colors">{COMPANY_INFO.contacts.email}</a>
+                  </div>
+                  <div className="flex items-center gap-2.5">
+                    <MapPin className="w-4 h-4 text-emerald-500" />
+                    <span>{COMPANY_INFO.contacts.address}</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div className="flex flex-col sm:flex-row justify-between items-center gap-4 text-xs">
+              <p className="text-slate-550">&copy; {new Date().getFullYear()} <strong>Biba Communication</strong>. All rights reserved. Consulting Firm, Kolkata.</p>
+              <button onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })} className="p-2.5 rounded-lg bg-slate-900 border border-slate-800 text-slate-400 hover:text-emerald-400 hover:border-emerald-950 transition-all flex items-center gap-1 cursor-pointer font-bold uppercase tracking-wider text-[10px]">
+                <span>Back to Top</span>
+                <ArrowUp className="w-3.5 h-3.5" />
+              </button>
+            </div>
+          </div>
+        </footer>
+      );
+    }
+
+    // --- MAIN APP SYSTEM ---
+    function App() {
+      const [selectedServiceIds, setSelectedServiceIds] = useState([]);
+
+      const handleToggleService = (serviceId) => {
+        setSelectedServiceIds(prev =>
+          prev.includes(serviceId) ? prev.filter(id => id !== serviceId) : [...prev, serviceId]
+        );
+      };
+
+      const handleClearServices = () => setSelectedServiceIds([]);
+
+      const handleSelectPredefinedBundle = (serviceIds) => {
+        const isAllSelected = serviceIds.every(id => selectedServiceIds.includes(id));
+        if (isAllSelected) {
+          setSelectedServiceIds(prev => prev.filter(id => !serviceIds.includes(id)));
+        } else {
+          setSelectedServiceIds(prev => {
+            const next = [...prev];
+            serviceIds.forEach(id => { if (!next.includes(id)) next.push(id); });
+            return next;
+          });
+        }
+      };
+
+      const handleNavigateToPlanner = () => {
+        const element = document.getElementById('estimator');
+        if (element) {
+          const offset = 80;
+          const bodyRect = document.body.getBoundingClientRect().top;
+          const elementRect = element.getBoundingClientRect().top;
+          const offsetPosition = (elementRect - bodyRect) - offset;
+          window.scrollTo({ top: offsetPosition, behavior: 'smooth' });
+        }
+      };
+
+      return (
+        <div className="min-h-screen bg-slate-55 font-sans flex flex-col justify-between">
+          <div>
+            <Header />
+            <main>
+              <Hero />
+              <About />
+              <Services selectedServiceIds={selectedServiceIds} onToggleService={handleToggleService} onNavigateToPlanner={handleNavigateToPlanner} />
+              <InteractiveEstimator selectedServiceIds={selectedServiceIds} onToggleService={handleToggleService} onClearServices={handleClearServices} onSelectPredefinedBundle={handleSelectPredefinedBundle} />
+              <FAQ />
+              <ContactForm selectedServiceIds={selectedServiceIds} onToggleService={handleToggleService} />
+            </main>
+          </div>
+          <Footer />
+        </div>
+      );
+    }
+
+    const rootElement = document.getElementById('root');
+    const root = ReactDOM.createRoot(rootElement);
+    root.render(<App />);
+  </script>
+</body>
+</html>

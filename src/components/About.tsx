@@ -47,7 +47,7 @@ export default function About() {
             </p>
 
             <div className="border-l-4 border-emerald-500 bg-slate-50 p-4 rounded-r-xl italic text-slate-700 text-sm">
-              &ldquo;We believe that premium professional bookkeeping and timely tax filings should not be a luxury reserved only for giant corporations. Small and midsize businesses deserve absolute precision, too.&rdquo;
+              {"“"}We believe that premium professional bookkeeping and timely tax filings should not be a luxury reserved only for giant corporations. Small and midsize businesses deserve absolute precision, too.{"”"}
             </div>
 
             <div className="pt-2">
