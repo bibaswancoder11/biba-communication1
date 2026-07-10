@@ -69,7 +69,7 @@ export default function Header() {
           {/* Logo & Brand Name */}
           <div className="flex items-center gap-2.5 cursor-pointer" onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}>
             <div className="w-10 h-10 rounded-lg bg-emerald-600 flex items-center justify-center text-white shadow-sm shadow-emerald-600/30">
-              <Briefcase className="w-5.5 h-5.5" />
+              <Briefcase className="w-5 h-5" />
             </div>
             <div>
               <span className="font-serif text-xl sm:text-2xl font-bold tracking-tight text-slate-900 block leading-tight">
